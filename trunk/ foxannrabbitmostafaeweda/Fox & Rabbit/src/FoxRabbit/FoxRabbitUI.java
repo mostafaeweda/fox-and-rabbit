@@ -93,6 +93,7 @@ public class FoxRabbitUI implements Observer {
 	private Cursor standardCursor;
 	private Image grass;
 	private int constructMode = Constants.CHOOSEN_ATTRIBUTES;
+	private Image looseAnimate;
 
 	/**
 	 * Implementation of the singleton pattern to be represented as a facade and get the same
@@ -659,21 +660,20 @@ public class FoxRabbitUI implements Observer {
 		int x = Math.abs(gen.nextInt() % (dispBounds.width - pt.x));
 		int y = Math.abs(gen.nextInt() % (dispBounds.height - pt.y));
 		final Point location = new Point(x, y);
-		canvas.addPaintListener(new PaintListener(){
+		looseAnimate = new Image(display, pt.x + 5, pt.y);
+		gc = new GC(looseAnimate);
+		gc.setForegroundPattern(pattern);
+		gc.setFont(medFont);
+		gc.drawString(msg, 0, 0);
+		gc.dispose();
+		imData = looseAnimate.getImageData();
+		imData.transparentPixel = imData.palette.getPixel(new RGB(255, 255, 255));
+		looseAnimate = new Image(display, imData);
+		canvas.addPaintListener(new PaintListener() {
 			@Override
 			public void paintControl(PaintEvent e) {
-				Image im = new Image(display, pt.x + 5, pt.y);
-				GC gc = new GC(im);
-				gc.setForegroundPattern(pattern);
-				gc.setFont(medFont);
-				gc.drawString(msg, 0, 0);
-				gc.dispose();
-				ImageData data = im.getImageData();
-				data.transparentPixel = data.palette.getPixel(new RGB(255, 255, 255));
-				im = new Image(display, data);
 				e.gc.drawImage(rabbitLoose, 0, 0);
-				e.gc.drawImage(im, location.x, location.y);
-				im.dispose();
+				e.gc.drawImage(looseAnimate, location.x, location.y);
 			}});
 		// animator runnable to animate message movement
 		final Runnable mover = new Runnable(){
@@ -721,6 +721,7 @@ public class FoxRabbitUI implements Observer {
 			@Override
 			public void widgetDisposed(DisposeEvent e) {
 //				anim.stop();
+				looseAnimate.dispose();
 				yellow.dispose();
 				cursor.dispose();
 				display.timerExec(-1, mover);
