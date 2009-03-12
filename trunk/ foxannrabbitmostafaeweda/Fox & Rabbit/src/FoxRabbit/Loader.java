@@ -65,14 +65,14 @@ public class Loader {
 		public Constructor<E> construct;
 		public Constructor<E> fileConstructor;
 		public String imgPath;
-		public String toolTip;
+		public String defintion;
 
 		public CompositeClass(Constructor<E> construct, Constructor<E> fileConstructor,
 				String imgPath, String toolTip) {
 			this.construct = construct;
 			this.imgPath = imgPath;
 			this.fileConstructor = fileConstructor;
-			this.toolTip = toolTip;
+			this.defintion = toolTip;
 		}
 	}
 }

@@ -15,7 +15,7 @@ public interface Constants {
 	 * max number of escapes the rabbit could be still eaten by the fox
 	 * After this number of escapes, the rabbit wins
 	 */
-	byte MAX_ESCAPES = 5;
+	byte MAX_ESCAPES = 10;
 
 	/**
 	 * Block code representation in the array
