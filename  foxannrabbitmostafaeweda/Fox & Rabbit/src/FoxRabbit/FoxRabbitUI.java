@@ -321,7 +321,8 @@ public class FoxRabbitUI implements Observer {
 				} else if (k == Constants.RABBIT) {
 					view[i][j].setImage(rabbitImg);
 				}
-				// else :: leave it empty
+//				else
+//					view[i][j].setVisible(false);// else :: leave it empty
 			}
 		}
 	}
@@ -1057,7 +1058,7 @@ public class FoxRabbitUI implements Observer {
 					display.timerExec(-1, mover);
 					composite.dispose();
 					shell.removeTraverseListener(this);
-					FoxRabbitUI.this.composite = startUpComposite();
+					FoxRabbitUI.this.composite = startUpComposite2();
 					shell.layout();
 					shell.redraw();
 				}

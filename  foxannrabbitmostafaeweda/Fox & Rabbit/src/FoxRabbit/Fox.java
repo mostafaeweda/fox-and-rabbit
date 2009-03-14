@@ -39,18 +39,22 @@ public class Fox extends Animal {
 	}
 
 	public Observation action() {
-		return search = search(location);
+		return search = search();
 	}
 
+	/**
+	 * move the fox with the current data the fox know about from his sight or other foxes
+	 * sight if there are more than one fox or moves randomly if no data is avaialable on the rabbit location
+	 */
 	public void move() {
 		byte moveTo = 0;
+		int trials = 0; // the number of trials after which the fox recognizes that he is trapped is 100
 		if (search == null) {
-			if (lastSeen == null) {
-				int trials = 0;
+			if (lastSeen == null) { // the rabbit was never seen
 				do {
 					moveTo = (byte) (Math.abs(generator.nextInt()) % 8);
-				} while (! move(location, MAPPING[moveTo], Constants.NORMAL_STEP) && trials++ < 20);
-			} else {
+				} while (! move(MAPPING[moveTo], Constants.NORMAL_STEP) && trials++ < 100);
+			} else { // the rabbit was seen by a fox
 				int direction = 0;
 				if (location.x > lastSeen.x)
 					direction |= Constants.UP;
@@ -60,74 +64,86 @@ public class Fox extends Animal {
 					direction |= Constants.LEFT;
 				else
 					direction |= Constants.RIGHT;
-				if (! move(location, direction, Constants.NORMAL_STEP)) {
+				trials = 0;
+				if (! move(direction, Constants.NORMAL_STEP)) {
 					do {
 						moveTo = (byte) (Math.abs(generator.nextInt()) % 8);
-					} while (! move(location, MAPPING[moveTo],
-							Constants.NORMAL_STEP));
+					} while (! move(MAPPING[moveTo],
+							Constants.NORMAL_STEP) && trials < 100);
 				}
 			}
-		} else /* seen */{
+		} else /* seen */ { // the movement isn't restricted
 			if (search.distance > Constants.FOX_STEP)
-				move(location, search.direction, Constants.FOX_STEP);
+				move(search.direction, Constants.FOX_STEP);
 			else {
-				move(location, search.direction, search.distance);
+				move(search.direction, search.distance);
 				observer.update(null, "lost");
 			}
 		}
 		search = null;
 	}
 
-	public Observation search(Point foxLocation) {
+	/**
+	 * The search method returns an observation having the information available from the current fox
+	 * @return an observation containg the data
+	 * @see Observation
+	 */
+	public Observation search() {
 		Observation o = new Observation();
 		o.location = new Point(board.rabbit.location.x, board.rabbit.location.y);
 		Point dest = board.rabbit.location;
-		if (dest.x == foxLocation.x) {
-			if (dest.y > foxLocation.y)
+		if (dest.x == location.x) {
+			if (dest.y > location.y)
 				o.direction = Constants.RIGHT;
 			else
 				o.direction = Constants.LEFT;
-			o.distance = Math.abs(dest.y - foxLocation.y);
+			o.distance = Math.abs(dest.y - location.y);
 			// go through the path and make sure that there are no blocks in the way
-			if (emptyWay(foxLocation, o))
+			if (emptyWay(location, o))
 				return o;
 			else
 				return null;
 		}
-		else if (dest.y == foxLocation.y) {
-			if (dest.x > foxLocation.x)
+		else if (dest.y == location.y) {
+			if (dest.x > location.x)
 				o.direction = Constants.DOWN;
 			else
 				o.direction = Constants.UP;
-			o.distance = Math.abs(dest.x - foxLocation.x);
+			o.distance = Math.abs(dest.x - location.x);
 			// go through the path and make sure that there are no blocks in the way
-			if (emptyWay(foxLocation, o))
+			if (emptyWay(location, o))
 				return o;
 			else
 				return null;
 		}
-		else if (Math.abs(dest.x - foxLocation.x) == Math.abs(dest.y - foxLocation.y)) {
+		// diagonally moving
+		else if (Math.abs(dest.x - location.x) == Math.abs(dest.y - location.y)) {
 				int foundHere = 0;
-				if (dest.x > foxLocation.x)
+				if (dest.x > location.x)
 					foundHere |= Constants.DOWN;
 				else
 					foundHere |= Constants.UP;
-				if (dest.y > foxLocation.y)
+				if (dest.y > location.y)
 					foundHere |= Constants.RIGHT;
 				else
 					foundHere |= Constants.LEFT;
 				o.direction = foundHere;
-				o.distance = Math.abs(dest.x - foxLocation.x);
+				o.distance = Math.abs(dest.x - location.x);
 				// go through the path and make sure that there are no blocks in the way
-				if (emptyWay(foxLocation, o))
+				if (emptyWay(location, o))
 					return o;
-				else
+				else // no data is available
 					return null;
 			}
-		else
+		else // no data is available
 			return null;
 	}
 
+	/**
+	 * checks if there is empty way between the fox and the observation received
+	 * @param o the observation having the data
+	 * @return true if the way is empty between the fox and the rabbit; false otherwise
+	 */
 	private boolean emptyWay(Point fox, Observation o) {
 		int m = 0, n = 0;
 		if ((o.direction & Constants.DOWN) == Constants.DOWN)
@@ -144,8 +160,14 @@ public class Fox extends Animal {
 		return true;
 	}
 
-
-	public boolean move(Point location, int direction, int step) {
+	/**
+	 * moves the fox withe 
+	 * @param location
+	 * @param direction
+	 * @param step
+	 * @return
+	 */
+	public boolean move(int direction, int step) {
 		Point moved = new Point(location.x, location.y);
 		if ((direction & Constants.DOWN) == Constants.DOWN)
 			moved.x += step;
@@ -165,6 +187,10 @@ public class Fox extends Animal {
 		return true;
 	}
 
+	/**
+	 * updates the observer with the new location of the fox
+	 * @param lastSeen
+	 */
 	public void update(Point lastSeen) {
 		this.lastSeen = lastSeen;
 	}
