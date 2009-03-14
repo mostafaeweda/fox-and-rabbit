@@ -18,9 +18,20 @@ import java.util.Hashtable;
  */
 public class Loader {
 
+	/**
+	 * table containing the loaded classes and their related data
+	 */
 	private Hashtable<String, CompositeClass<AbstractBoard>> classes;
+
+	/**
+	 * list of the loaded classes 
+	 */
 	private ArrayList<String> classNames;
 
+	/**
+	 * creates a loader that loads the related data from a properties file
+	 * @param properties the path of the properties file to load the data from
+	 */
 	@SuppressWarnings("unchecked")
 	public Loader(String properties) {
 		classes = new Hashtable<String, CompositeClass<AbstractBoard>>(10);
@@ -53,26 +64,47 @@ public class Loader {
 		}
 	}
 
+	/**
+	 * @return the names of the classes loaded by the loader
+	 */
 	public ArrayList<String> getClasses() {
 		return classNames;
 	}
 
+	/**
+	 * 
+	 * @param className the name of the class to get the data to
+	 * @return the composite class having the needed data to construct the class
+	 */
 	public CompositeClass<AbstractBoard> getData(String className) {
 		return classes.get(className);
 	}
 
+	/**
+	 * Grouping class that holds the needed data to the construction class(es)
+	 * @author Mostafa Mahmoud Mahmoud Eweda
+	 *
+	 * @param <E> the type of the class or interface for which the composite class should hold data from
+	 */
 	class CompositeClass <E> {
 		public Constructor<E> construct;
 		public Constructor<E> fileConstructor;
 		public String imgPath;
 		public String defintion;
 
+		/**
+		 * creates a composite class with the given data
+		 * @param construct the constructor of the class
+		 * @param fileConstructor the constructor that depends on a file to load the data from
+		 * @param imgPath the path of the image
+		 * @param text the definition of the class
+		 */
 		public CompositeClass(Constructor<E> construct, Constructor<E> fileConstructor,
-				String imgPath, String toolTip) {
+				String imgPath, String text) {
 			this.construct = construct;
 			this.imgPath = imgPath;
 			this.fileConstructor = fileConstructor;
-			this.defintion = toolTip;
+			this.defintion = text;
 		}
 	}
 }
