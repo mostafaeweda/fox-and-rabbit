@@ -162,10 +162,9 @@ public class Fox extends Animal {
 
 	/**
 	 * moves the fox withe 
-	 * @param location
-	 * @param direction
+	 * @param direction the desired direction
 	 * @param step
-	 * @return
+	 * @return true if the move is accomplished successfully; else returns false
 	 */
 	public boolean move(int direction, int step) {
 		Point moved = new Point(location.x, location.y);
