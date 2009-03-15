@@ -205,9 +205,9 @@ public class FoxRabbitUI implements Observer {
 		rabbitCursor = new Cursor(display, data, data.width / 2,
 				data.height / 2);
 		rabbitImg = new Image(display, new ImageData(FoxRabbitUI.class
-				.getResourceAsStream("rabbit.gif")).scaledTo(x, y));
+				.getResourceAsStream("rabbit.png")).scaledTo(x, y));
 		foxImg = new Image(display, new ImageData(FoxRabbitUI.class
-				.getResourceAsStream("fox.jpg")).scaledTo(x, y));
+				.getResourceAsStream("fox.png")).scaledTo(x, y));
 		// white image to represent empty places
 		whiteImg = new Image(display, x, y);
 		GC gc = new GC(whiteImg);
@@ -369,6 +369,7 @@ public class FoxRabbitUI implements Observer {
 		final Composite composite = new Composite(shell, SWT.NONE);
 		composite.setLayout(new FormLayout());
 		composite.setCursor(bigArrow);
+		composite.setBackground(display.getSystemColor(SWT.COLOR_DARK_GRAY));
 		/*
 		 * CLabel newGame = new CLabel(composite, SWT.NONE);
 		 * newGame.setAlignment(SWT.CENTER); newGame.setBackground(new Color[] {
@@ -402,20 +403,21 @@ public class FoxRabbitUI implements Observer {
 		});
 		exit.addMouseTrackListener(tracker);
 		data = new FormData();
-		data.left = new FormAttachment(0, 20);
+		data.left = new FormAttachment(0, 0);
 		data.bottom = new FormAttachment(100, -100);
 		data.height = 150;
-		data.width = 280;
+		data.width = 320;
 		exit.setLayoutData(data);
 
 		data = new FormData();
-		data.left = new FormAttachment(0, 20);
+		data.left = new FormAttachment(0, 0);
 		data.top = new FormAttachment(0, 100);
 		data.bottom = new FormAttachment(exit, 0);
-		data.width = 300;
+		data.width = 320;
 		final Composite boards = new Composite(composite, SWT.NONE);
+		boards.setBackground(display.getSystemColor(SWT.COLOR_DARK_MAGENTA));
 		Rectangle displayBounds = display.getBounds();
-		boards.setData("bounds", new Rectangle(20, 250, 200,
+		boards.setData("bounds", new Rectangle(0, 250, 300,
 				displayBounds.height - 500));
 		boards.setLayoutData(data);
 		boards.setLayout(new GridLayout(1, true));
@@ -440,10 +442,10 @@ public class FoxRabbitUI implements Observer {
 		final Point rabbitLocaton = new Point(0, 0);
 		final Point foxLocaton = new Point(canvasBounds.width - 100, 0);
 		ImageData imgDat = new ImageData(FoxRabbitUI.class
-				.getResourceAsStream("rabbit2.png")).scaledTo(100, 100);
-		imgDat.transparentPixel = imgDat.getPixel(0, 0);
+				.getResourceAsStream("rabbit.png")).scaledTo(100, 100);
+//		imgDat.transparentPixel = imgDat.getPixel(0, 0);
 		final Image rabbitRun = new Image(display, imgDat);
-		imgDat = new ImageData(FoxRabbitUI.class.getResourceAsStream("fox.jpg"))
+		imgDat = new ImageData(FoxRabbitUI.class.getResourceAsStream("fox.png"))
 				.scaledTo(100, 100);
 		imgDat.transparentPixel = imgDat.getPixel(0, 0);
 		final Image foxRun = new Image(display, imgDat);
@@ -656,7 +658,7 @@ public class FoxRabbitUI implements Observer {
 	}
 
 	private class FoxRabbitRun implements Runnable {
-		private static final int STEP = 2;
+		private static final int STEP = 4;
 		private Canvas canvas;
 		private boolean down = true;
 		private Point rabbitLocaton;
