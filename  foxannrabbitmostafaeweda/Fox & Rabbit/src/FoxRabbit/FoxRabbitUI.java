@@ -98,6 +98,7 @@ public class FoxRabbitUI implements Observer {
 	private Cursor rabbitCursor;
 	private Cursor standardCursor;
 	private Image grass;
+	private boolean previouslyHovered = false;
 	private int constructMode = Constants.CHOOSEN_ATTRIBUTES;
 	private Image looseAnimate;
 
@@ -294,6 +295,7 @@ public class FoxRabbitUI implements Observer {
 			@Override
 			public void widgetDisposed(DisposeEvent e) {
 				shell.removeTraverseListener(traverser);
+				previouslyHovered = false;
 				rabbitImg.dispose();
 				foxImg.dispose();
 				blankImg.dispose();
@@ -321,8 +323,8 @@ public class FoxRabbitUI implements Observer {
 				} else if (k == Constants.RABBIT) {
 					view[i][j].setImage(rabbitImg);
 				}
-//				else
-//					view[i][j].setVisible(false);// else :: leave it empty
+				// else
+				// view[i][j].setVisible(false);// else :: leave it empty
 			}
 		}
 	}
@@ -340,6 +342,11 @@ public class FoxRabbitUI implements Observer {
 		final Color green = display.getSystemColor(SWT.COLOR_GREEN);
 		final Color blue = display.getSystemColor(SWT.COLOR_BLUE);
 		final Color boardItemHot = new Color(display, 21, 8, 42);
+		final Image transientBackground;
+		ImageData arrowDat = new ImageData(FoxRabbitUI.class
+				.getResourceAsStream("big arrow.png")).scaledTo(80, 80);
+		arrowDat.transparentPixel = arrowDat.getPixel(0, 0);
+		final Cursor bigArrow = new Cursor(display, arrowDat, 0, 0);
 
 		MouseTrackListener tracker = new MouseTrackAdapter() {
 			@Override
@@ -361,30 +368,22 @@ public class FoxRabbitUI implements Observer {
 
 		final Composite composite = new Composite(shell, SWT.NONE);
 		composite.setLayout(new FormLayout());
-		CLabel newGame = new CLabel(composite, SWT.NONE);
-		newGame.setAlignment(SWT.CENTER);
-		newGame.setBackground(new Color[] {
-				display.getSystemColor(SWT.COLOR_DARK_GRAY),
-				display.getSystemColor(SWT.COLOR_BLACK),
-				display.getSystemColor(SWT.COLOR_DARK_GRAY) }, new int[] { 50,
-				100 });
-		newGame.setText("New Game");
-		newGame.setFont(font);
-		newGame.setForeground(frontNormal);
-		newGame.addMouseListener(new MouseAdapter() {
-			public void mouseDown(MouseEvent e) {
-				composite.dispose();
-				customComposite();
-				shell.layout();
-			}
-		});
-		newGame.addMouseTrackListener(tracker);
-		data = new FormData();
-		data.left = new FormAttachment(0, 20);
-		data.top = new FormAttachment(0, 100);
-		data.height = 150;
-		data.width = 200;
-		newGame.setLayoutData(data);
+		composite.setCursor(bigArrow);
+		/*
+		 * CLabel newGame = new CLabel(composite, SWT.NONE);
+		 * newGame.setAlignment(SWT.CENTER); newGame.setBackground(new Color[] {
+		 * display.getSystemColor(SWT.COLOR_DARK_GRAY),
+		 * display.getSystemColor(SWT.COLOR_BLACK),
+		 * display.getSystemColor(SWT.COLOR_DARK_GRAY) }, new int[] { 50, 100
+		 * }); newGame.setText("New Game"); newGame.setFont(font);
+		 * newGame.setForeground(frontNormal); newGame.addMouseListener(new
+		 * MouseAdapter() { public void mouseDown(MouseEvent e) {
+		 * composite.dispose(); customComposite(); shell.layout(); } });
+		 * newGame.addMouseTrackListener(tracker); data = new FormData();
+		 * data.left = new FormAttachment(0, 20); data.top = new
+		 * FormAttachment(0, 100); data.height = 150; data.width = 200;
+		 * newGame.setLayoutData(data);
+		 */
 
 		CLabel exit = new CLabel(composite, SWT.NONE);
 		exit.setAlignment(SWT.CENTER);
@@ -406,23 +405,12 @@ public class FoxRabbitUI implements Observer {
 		data.left = new FormAttachment(0, 20);
 		data.bottom = new FormAttachment(100, -100);
 		data.height = 150;
-		data.width = 200;
+		data.width = 280;
 		exit.setLayoutData(data);
-		composite.addDisposeListener(new DisposeListener() {
-			@Override
-			public void widgetDisposed(DisposeEvent e) {
-				oneHot.dispose();
-				oneNormal.dispose();
-				twoHot.dispose();
-				twoNormal.dispose();
-				threeHot.dispose();
-				threeNormal.dispose();
-			}
-		});
 
 		data = new FormData();
 		data.left = new FormAttachment(0, 20);
-		data.top = new FormAttachment(newGame, 0);
+		data.top = new FormAttachment(0, 100);
 		data.bottom = new FormAttachment(exit, 0);
 		data.width = 300;
 		final Composite boards = new Composite(composite, SWT.NONE);
@@ -441,10 +429,25 @@ public class FoxRabbitUI implements Observer {
 		boards.setData("canvas", canvas);
 		final Rectangle canvasBounds = new Rectangle(300, 0,
 				displayBounds.width - 320, displayBounds.height);
+		boards.setData("canvas bounds", canvasBounds);
 		/* Background of the start up windowing */
 		startUpImg = new Image(display, new ImageData(FoxRabbitUI.class
 				.getResourceAsStream("start.jpg")).scaledTo(canvasBounds.width,
-				(int) (canvasBounds.height)));
+				canvasBounds.height));
+		transientBackground = new Image(display, new ImageData(
+				FoxRabbitUI.class.getResourceAsStream("fox and rabbit 3.png"))
+				.scaledTo(canvasBounds.width, canvasBounds.height));
+		final Point rabbitLocaton = new Point(0, 0);
+		final Point foxLocaton = new Point(canvasBounds.width - 100, 0);
+		ImageData imgDat = new ImageData(FoxRabbitUI.class
+				.getResourceAsStream("rabbit2.png")).scaledTo(100, 100);
+		imgDat.transparentPixel = imgDat.getPixel(0, 0);
+		final Image rabbitRun = new Image(display, imgDat);
+		imgDat = new ImageData(FoxRabbitUI.class.getResourceAsStream("fox.jpg"))
+				.scaledTo(100, 100);
+		imgDat.transparentPixel = imgDat.getPixel(0, 0);
+		final Image foxRun = new Image(display, imgDat);
+		boards.setData("do animate", new Boolean(false));
 		canvas.setLayoutData(data);
 		canvas.setBackground(display.getSystemColor(SWT.COLOR_BLACK));
 		canvas.addPaintListener(new PaintListener() {
@@ -457,13 +460,23 @@ public class FoxRabbitUI implements Observer {
 				Image chosenImg = (Image) boards.getData("choosen");
 				if (chosenImg != null) {
 					gc.drawImage(chosenImg, startX, startY);
+					if (((Boolean) boards.getData("do animate")).booleanValue()) {
+						gc.drawImage(foxRun, foxLocaton.x, foxLocaton.y);
+						gc.drawImage(rabbitRun, rabbitLocaton.x,
+								rabbitLocaton.y);
+					}
 				} else {
-					gc.drawImage(startUpImg, 0, 0);
+					if (previouslyHovered)
+						gc.drawImage(transientBackground, 0, 0);
+					else
+						gc.drawImage(startUpImg, 0, 0);
 				}
+				gc.setLineWidth(20);
+				gc.drawRectangle(canvas.getClientArea());
 			}
 		});
 
-		GridData gridData = new GridData(GridData.FILL_HORIZONTAL);
+		GridData gridData = new GridData(GridData.FILL_BOTH);
 		ArrayList<String> classes = loader.getClasses();
 		Iterator<String> iter = classes.iterator();
 
@@ -485,17 +498,28 @@ public class FoxRabbitUI implements Observer {
 			label.setFont(font);
 			label.setAlignment(SWT.CENTER);
 			label.addMouseTrackListener(new MouseTrackAdapter() {
+				private FoxRabbitRun runner = new FoxRabbitRun(boards,
+						rabbitLocaton, foxLocaton);
+
 				@Override
 				public void mouseEnter(MouseEvent e) {
+					previouslyHovered = true;
 					CLabel label = (CLabel) e.widget;
 					label.setBackground(new Color[] { green, blue, green },
 							new int[] { 50, 100 });
 					boards.setData("choosen", image);
+					boards.setData("do animate", new Boolean(true));
+					display.timerExec(1000, runner);
 					((Canvas) boards.getData("canvas")).redraw();
 				}
 
 				@Override
 				public void mouseExit(MouseEvent e) {
+					boards.setData("choosen", null);
+					display.timerExec(-1, runner);
+					boards.setData("do animate", new Boolean(false));
+					runner.reset();
+					canvas.redraw();
 					CLabel label = (CLabel) e.widget;
 					label.setBackground(new Color[] { frontNormal,
 							boardItemHot, frontNormal }, new int[] { 50, 100 });
@@ -509,14 +533,14 @@ public class FoxRabbitUI implements Observer {
 						if (constructMode == Constants.STYLE_FILE)
 							board = compo.fileConstructor.newInstance(style);
 						else if (constructMode == Constants.CHOOSEN_ATTRIBUTES) {
-							Combo sizes = (Combo)composite.getData("sizes");
-							Combo blocks = (Combo)composite.getData("blocks");
+							Combo sizes = (Combo) composite.getData("sizes");
+							Combo blocks = (Combo) composite.getData("blocks");
 							board = compo.construct.newInstance(Integer
 									.parseInt(sizes.getItem(sizes
 											.getSelectionIndex())), Integer
 									.parseInt(blocks.getItem(blocks
 											.getSelectionIndex())));
-							}
+						}
 						Combo foxes = (Combo) composite.getData("foxes");
 						int foxesNumber = Integer.parseInt(foxes.getItem(foxes
 								.getSelectionIndex()));
@@ -549,12 +573,6 @@ public class FoxRabbitUI implements Observer {
 		expandBar.setForeground(display.getSystemColor(SWT.COLOR_BLUE));
 
 		Composite controls = new Composite(expandBar, SWT.NONE);
-		data = new FormData();
-		// data.left = new FormAttachment(0, 0);
-		// data.top = new FormAttachment(80, 0);
-		// data.right = new FormAttachment(100, 0);
-		// data.bottom = new FormAttachment(100, 0);
-		// expandBar.setLayoutData(data);
 		controls.setLayout(new GridLayout(2, false));
 		CLabel sizeLabel = new CLabel(controls, SWT.NONE);
 		sizeLabel.setFont(font);
@@ -620,7 +638,83 @@ public class FoxRabbitUI implements Observer {
 			}
 		});
 
+		composite.addDisposeListener(new DisposeListener() {
+			@Override
+			public void widgetDisposed(DisposeEvent e) {
+				transientBackground.dispose();
+				bigArrow.dispose();
+				oneHot.dispose();
+				oneNormal.dispose();
+				twoHot.dispose();
+				twoNormal.dispose();
+				threeHot.dispose();
+				threeNormal.dispose();
+			}
+		});
+
 		return composite;
+	}
+
+	private class FoxRabbitRun implements Runnable {
+		private static final int STEP = 2;
+		private Canvas canvas;
+		private boolean down = true;
+		private Point rabbitLocaton;
+		private Rectangle canvasBounds;
+		private Point foxLocaton;
+		private Composite boards;
+		private boolean soundStarted = false;
+		private Player player;
+
+		public FoxRabbitRun(Composite boards, Point rabbitLocation,
+				Point foxLocation) {
+			this.boards = boards;
+			canvas = (Canvas) boards.getData("canvas");
+			canvasBounds = (Rectangle) boards.getData("canvas bounds");
+			this.rabbitLocaton = rabbitLocation;
+			this.foxLocaton = foxLocation;
+		}
+
+		public void reset() {
+			rabbitLocaton.x = 0;
+			rabbitLocaton.y = 0;
+			foxLocaton.x = canvasBounds.width - 100;
+			foxLocaton.y = 0;
+		}
+
+		@Override
+		public void run() {
+			if (down) {
+				rabbitLocaton.y += STEP;
+				foxLocaton.y += STEP;
+			} else {
+				rabbitLocaton.x += STEP;
+				foxLocaton.x -= STEP;
+				if (foxLocaton.x - rabbitLocaton.x <= 300) {
+					if (!soundStarted) {
+						player = startMedia("loose.wav");
+						soundStarted = true;
+					}
+					if (foxLocaton.x - rabbitLocaton.x <= 0) {
+						boards.setData("do animate", new Boolean(false));
+						reset();
+					}
+				}
+			}
+			if (rabbitLocaton.y >= canvasBounds.height - 100) {
+				rabbitLocaton.y = canvasBounds.height - 100;
+				foxLocaton.y = canvasBounds.height - 100;
+				down = false;
+			}
+			if (canvas.isDisposed()) {
+				display.timerExec(-1, this);
+				if (player != null)
+					player.stop();
+			} else {
+				canvas.redraw();
+				display.timerExec(10, this);
+			}
+		}
 	}
 
 	/**
@@ -930,6 +1024,7 @@ public class FoxRabbitUI implements Observer {
 			@Override
 			public void widgetDisposed(DisposeEvent e) {
 				// anim.stop();
+				previouslyHovered = false;
 				stopMedia(player);
 				cursor.dispose();
 				display.timerExec(-1, mover);
@@ -1070,6 +1165,7 @@ public class FoxRabbitUI implements Observer {
 				// anim.stop();
 				looseAnimate.dispose();
 				yellow.dispose();
+				previouslyHovered = false;
 				cursor.dispose();
 				display.timerExec(-1, mover);
 			}
@@ -1085,14 +1181,71 @@ public class FoxRabbitUI implements Observer {
 	public void update(Observable o, Object arg) {
 		refresh();
 		String choice = (String) arg;
-		composite.dispose();
 		if ("win".equals(choice)) {
-			FoxRabbitUI.this.composite = winComposite();
+			startMedia("win.wav");
+			composite.setCursor(standardCursor);
+			display.timerExec(100, new Runnable() {
+				private boolean imageOn = true;
+				private static final int REPEATS = 5;
+				private int counter = 0;
+				Point pt = rabbit.location;
+				private Image temp = view[pt.x][pt.y].getImage();
+
+				@Override
+				public void run() {
+					if (imageOn)
+						view[pt.x][pt.y].setImage(null);
+					else
+						view[pt.x][pt.y].setImage(temp);
+					imageOn = !imageOn;
+					counter++;
+					if (counter < REPEATS)
+						display.timerExec(500, this);
+					else {
+						display.timerExec(-1, this);
+						composite.dispose();
+						FoxRabbitUI.this.composite = winComposite();
+						shell.layout();
+						shell.redraw();
+					}
+				}
+			});
 		} else if ("lost".equals(choice)) {
-			FoxRabbitUI.this.composite = looseComposite();
+			rabbitCursor.dispose();
+			composite.setCursor(standardCursor);
+			display.timerExec(100, new Runnable() {
+				private boolean imageOn = true;
+				private static final int REPEATS = 5;
+				private int counter = 0;
+				Point pt = rabbit.location;
+				private Image temp = view[pt.x][pt.y].getImage();
+
+				@Override
+				public void run() {
+					if (view[pt.x][pt.y].isDisposed())
+						display.timerExec(-1, this);
+					else {
+						if (imageOn)
+							view[pt.x][pt.y].setImage(null);
+						else
+							view[pt.x][pt.y].setImage(temp);
+						imageOn = !imageOn;
+						counter++;
+						if (counter < REPEATS)
+							display.timerExec(500, this);
+						else {
+							display.timerExec(-1, this);
+							composite.dispose();
+							FoxRabbitUI.this.composite = looseComposite();
+							shell.layout();
+							shell.redraw();
+						}
+					}
+				}
+			});
+		} else if ("seen".equals(choice)) {
+			startMedia("shot.wav");
 		}
-		shell.layout();
-		shell.redraw();
 	}
 
 	/**

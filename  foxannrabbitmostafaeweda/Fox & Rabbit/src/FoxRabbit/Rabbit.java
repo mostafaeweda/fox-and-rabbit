@@ -44,7 +44,6 @@ public class Rabbit extends Animal {
 		location = newLocation;
 		if (++escapes == Constants.MAX_ESCAPES)
 			observer.update(null, "win");
-		// TODO : notify wining
 	}
 
 	/**
