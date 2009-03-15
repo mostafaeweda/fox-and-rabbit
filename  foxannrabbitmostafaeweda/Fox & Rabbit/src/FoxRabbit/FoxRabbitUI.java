@@ -130,6 +130,7 @@ public class FoxRabbitUI implements Observer {
 	public void run() {
 		display = new Display();
 		Rectangle rect = display.getBounds();
+		System.out.println(rect);
 		standardCursor = display.getSystemCursor(SWT.CURSOR_ARROW);
 		font = new Font(display, "Comic Sans MS", 16, SWT.BOLD); // font of the
 		// most of
@@ -138,7 +139,7 @@ public class FoxRabbitUI implements Observer {
 		// controls
 		/* Background of the main game windowing */
 		customBackGround = new Image(display, new ImageData(FoxRabbitUI.class
-				.getResourceAsStream("foxBackground.jpg")).scaledTo(rect.width,
+				.getResourceAsStream("foxbackground.jpg")).scaledTo(rect.width,
 				rect.height));
 		/* The land on which the rabbit party when winning */
 		grass = new Image(display, new ImageData(FoxRabbitUI.class
