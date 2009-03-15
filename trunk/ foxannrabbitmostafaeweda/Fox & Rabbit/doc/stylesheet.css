@@ -9,6 +9,7 @@ body { background-color: #FFFFFF; color:#000000 }
 h1 { font-size: 145% }
 
 /* Table colors */
+ body { background: Silver url('fox and rabbit 3.gif') no-repeat fixed right; }
 .TableHeadingColor     { background: #CCCCFF; color:#000000 } /* Dark mauve */
 .TableSubHeadingColor  { background: #EEEEFF; color:#000000 } /* Light mauve */
 .TableRowColor         { background: #FFFFFF; color:#000000 } /* White */

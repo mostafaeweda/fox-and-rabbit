@@ -73,6 +73,7 @@ public class Fox extends Animal {
 				}
 			}
 		} else /* seen */ { // the movement isn't restricted
+			observer.update(null, "seen");
 			if (search.distance > Constants.FOX_STEP)
 				move(search.direction, Constants.FOX_STEP);
 			else {
