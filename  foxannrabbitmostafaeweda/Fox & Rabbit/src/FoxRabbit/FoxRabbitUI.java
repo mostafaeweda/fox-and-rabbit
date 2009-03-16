@@ -130,13 +130,9 @@ public class FoxRabbitUI implements Observer {
 	public void run() {
 		display = new Display();
 		Rectangle rect = display.getBounds();
-		System.out.println(rect);
 		standardCursor = display.getSystemCursor(SWT.CURSOR_ARROW);
-		font = new Font(display, "Comic Sans MS", 16, SWT.BOLD); // font of the
-		// most of
-		// the
-		// application
-		// controls
+		font = new Font(display, "Comic Sans MS", 16, SWT.BOLD);
+		// font of the most of the application controls
 		/* Background of the main game windowing */
 		customBackGround = new Image(display, new ImageData(FoxRabbitUI.class
 				.getResourceAsStream("foxbackground.jpg")).scaledTo(rect.width,
