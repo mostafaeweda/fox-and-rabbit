@@ -244,7 +244,8 @@ public class FoxRabbitUI implements Observer {
 								&& yDiff <= 1
 								&& board.getAt(point.x, point.y) == Constants.EMPTY) {
 							label.setImage(activeImg);
-							label.setCursor(rabbitCursor);
+							if (! rabbitCursor.isDisposed())
+								label.setCursor(rabbitCursor);
 						}
 					}
 
